@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Reservas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        h2, p {
+            text-align: center;
+        }
+        .instrucciones {
+            color: #555;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #eaeaea;
+            padding: 15px 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+        .time-col {
+            font-weight: bold;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            width: 80px;
+        }
+        .slot {
+            font-weight: bold;
+            font-size: 0.9em;
+            border-radius: 4px;
+        }
+        .disponible {
+            background-color: #e8f8f5;
+            color: #1abc9c;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .disponible:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 5px rgba(26, 188, 156, 0.3);
+            text-decoration: underline;
+        }
+        .ocupado {
+            background-color: #fadbd8;
+            color: #e74c3c;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Consulta de Disponibilidad</h2>
+    <p class="instrucciones">Revisa nuestros horarios. Haz clic en una hora <strong>Disponible</strong> para agendar directamente por WhatsApp.</p>
+
+    <table id="agenda">
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+                <th>Sábado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Generado por JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURACIÓN PRINCIPAL
+        // ==========================================
+        
+        // Coloca aquí tu número de WhatsApp (incluyendo el código de país, ejemplo para Chile: 569...)
+        const numeroWhatsApp = "56956277213"; 
+
+        // Agrega aquí las horas que ya te reservaron. 
+        // Solo escribe el día y la hora para que aparezcan en rojo.
+        const horasOcupadas = [
+            { dia: "Lunes", hora: 11 },
+            { dia: "Martes", hora: 15 },
+            { dia: "Jueves", hora: 10 },
+            { dia: "Viernes", hora: 18 }
+        ];
+
+        // ==========================================
+        // 2. GENERACIÓN DE LA AGENDA
+        // ==========================================
+        
+        const tbody = document.querySelector("#agenda tbody");
+        const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        const horaInicio = 10;
+        const horaFin = 19;
+
+        // Función para verificar si una hora específica está en la lista de ocupadas
+        function estaOcupado(dia, hora) {
+            return horasOcupadas.some(reserva => reserva.dia === dia && reserva.hora === hora);
+        }
+
+        // Crear las filas del horario
+        for (let h = horaInicio; h <= horaFin; h++) {
+            let tr = document.createElement("tr");
+
+            // Columna de la hora
+            let tdHora = document.createElement("td");
+            tdHora.className = "time-col";
+            tdHora.textContent = `${h}:00`;
+            tr.appendChild(tdHora);
+
+            // Columnas de los días
+            diasSemana.forEach(dia => {
+                let td = document.createElement("td");
+
+                if (estaOcupado(dia, h)) {
+                    // Si está en la lista de ocupados
+                    td.className = "slot ocupado";
+                    td.textContent = "Ocupado";
+                } else {
+                    // Si está disponible
+                    td.className = "slot disponible";
+                    td.textContent = "Disponible";
+                    
+                    // Al hacer clic, enviar a WhatsApp
+                    td.addEventListener("click", function() {
+                        let mensaje = `Hola, vengo desde la página web. Me gustaría reservar el día ${dia} a las ${h}:00 hrs. ¿Está disponible?`;
+                        let urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+                        window.open(urlWhatsApp, '_blank');
+                    });
+                }
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        }
+    </script>
+</body>
+</html>
